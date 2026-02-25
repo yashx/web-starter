@@ -1,0 +1,31 @@
+package task
+
+import (
+	"context"
+	"web-starter/foundation"
+	"web-starter/foundation/appError"
+)
+
+type Task struct {
+	Id          string `json:"id,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
+type GetTaskRequest struct {
+	TaskId string `json:"task_id"`
+}
+
+type GetTaskResponse struct {
+	Task *Task `json:"task"`
+}
+
+func getTask(ctx context.Context, app *foundation.App, request *GetTaskRequest) (*GetTaskResponse, error) {
+	t := &Task{}
+	err := app.DB.GetContext(ctx, t, `select id, description from task where id = ?`, request.TaskId)
+	if err != nil {
+		return nil, appError.BadRequestErrorWithCause("Not able to get Task", err)
+	}
+	return &GetTaskResponse{
+		Task: t,
+	}, nil
+}
