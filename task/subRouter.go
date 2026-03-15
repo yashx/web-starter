@@ -8,6 +8,7 @@ import (
 	"web-starter/foundation/httpHelper"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/yashx/shak"
 )
 
 type SubRouter struct {
@@ -29,6 +30,11 @@ func (sR SubRouter) getTaskHandlerFn(writer http.ResponseWriter, httpRequest *ht
 	var request *GetTaskRequest
 	if err := json.NewDecoder(httpRequest.Body).Decode(&request); err != nil {
 		httpHelper.JsonErrorResponse(sR.app, writer, httpRequest, appError.BadRequestErrorWithCause("Invalid Request", err))
+		return
+	}
+
+	if err := shak.RunValidation(request); err != nil {
+		httpHelper.JsonErrorResponse(sR.app, writer, httpRequest, appError.BadRequestErrorFromValidationError(err))
 		return
 	}
 

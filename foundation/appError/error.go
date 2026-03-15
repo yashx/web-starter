@@ -3,12 +3,14 @@ package appError
 import (
 	"fmt"
 	"net/http"
+
+	shakTypes "github.com/yashx/shak/types"
 )
 
 type AppError struct {
 	Code       string `json:"code"`
 	Message    string `json:"message"`
-	Cause      error  `json:"cause,omitempty"`
+	Cause      error  `json:"-"`
 	HttpStatus int    `json:"-"`
 }
 
@@ -59,6 +61,16 @@ func BadRequestErrorWithCause(message string, cause error) *AppError {
 		Code:       fmt.Sprintf("E%03d", _BadRequestErrorCode),
 		Message:    message,
 		HttpStatus: http.StatusBadRequest,
+		Cause:      cause,
+	}
+}
+
+func BadRequestErrorFromValidationError(err *shakTypes.ValidationError) *AppError {
+	return &AppError{
+		Code:       fmt.Sprintf("E%03d", _BadRequestErrorCode),
+		Message:    err.Error(),
+		HttpStatus: http.StatusBadRequest,
+		Cause:      err,
 	}
 }
 

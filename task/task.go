@@ -4,6 +4,9 @@ import (
 	"context"
 	"web-starter/foundation"
 	"web-starter/foundation/appError"
+
+	"github.com/yashx/shak/rule"
+	"github.com/yashx/shak/validation"
 )
 
 type Task struct {
@@ -13,6 +16,12 @@ type Task struct {
 
 type GetTaskRequest struct {
 	TaskId string `json:"task_id"`
+}
+
+func (g *GetTaskRequest) Validation() validation.Validation {
+	return validation.NewValidations(
+		validation.Value("task_id", g.TaskId, rule.NotBlank[string]()),
+	)
 }
 
 type GetTaskResponse struct {
