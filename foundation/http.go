@@ -19,7 +19,7 @@ func (app *App) StartHttpServer(subRouters ...SubRouter) error {
 	}
 
 	port := app.Config.MustString("http.port")
-	app.Logger.Info("Starting server", zap.String("port", port))
+	app.Logger.Info("starting server", zap.String("port", port))
 
 	err := http.ListenAndServe(":"+port, router)
 	if err != nil {

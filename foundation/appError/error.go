@@ -15,10 +15,7 @@ type AppError struct {
 }
 
 func (e *AppError) Error() string {
-	if e.Cause == nil {
-		return e.Code + ": " + e.Message
-	}
-	return fmt.Sprintf("%s: %s Cause: %v", e.Code, e.Message, e.Cause)
+	return e.Code + " " + e.Message
 }
 
 func (e *AppError) Unwrap() error {

@@ -7,6 +7,7 @@ import (
 	"web-starter/foundation/appError"
 
 	"github.com/go-chi/render"
+	"go.uber.org/zap"
 )
 
 func JsonResponse(app *foundation.App, responseWriter http.ResponseWriter, httpRequest *http.Request, response any, err error) {
@@ -20,8 +21,9 @@ func JsonResponse(app *foundation.App, responseWriter http.ResponseWriter, httpR
 func JsonErrorResponse(app *foundation.App, responseWriter http.ResponseWriter, httpRequest *http.Request, err error) {
 	var aErr *appError.AppError
 	if !errors.As(err, &aErr) {
-		aErr = appError.InternalServerError()
+		aErr = appError.InternalServerErrorWithCause(err)
 	}
+	app.Logger.Error("sending error response", zap.Error(err))
 	render.Status(httpRequest, aErr.HttpStatus)
 	render.JSON(responseWriter, httpRequest, aErr)
 }
