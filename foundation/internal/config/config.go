@@ -24,7 +24,9 @@ func GetConfig(logger *zap.Logger) *koanf.Koanf {
 	err = k.Load(env.Provider(".", env.Opt{
 		Prefix: "APP_",
 		TransformFunc: func(k, v string) (string, any) {
-			k = strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(k, "APP_")), "_", ".")
+			k = strings.ToLower(strings.TrimPrefix(k, "APP_"))
+			k = strings.ReplaceAll(k, "__", "-")
+			k = strings.ReplaceAll(k, "_", ".")
 			return k, v
 		},
 	}), nil)

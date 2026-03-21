@@ -2,6 +2,8 @@ package task
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"web-starter/foundation"
 	"web-starter/foundation/appError"
 
@@ -32,7 +34,10 @@ func getTask(ctx context.Context, app *foundation.App, request *GetTaskRequest) 
 	t := &Task{}
 	err := app.DB.GetContext(ctx, t, `select id, description from task where id = ?`, request.TaskId)
 	if err != nil {
-		return nil, appError.BadRequestErrorWithCause("Not able to get Task", err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, appError.BadRequestError("task not found")
+		}
+		return nil, appError.InternalServerError(err)
 	}
 	return &GetTaskResponse{
 		Task: t,

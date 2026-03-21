@@ -3,6 +3,7 @@ package foundation
 import (
 	"errors"
 	"fmt"
+	"os"
 	"syscall"
 	"web-starter/foundation/internal/config"
 	"web-starter/foundation/internal/database"
@@ -21,15 +22,18 @@ type App struct {
 func InitApp() (*App, error) {
 	logger, err := zap.NewProduction()
 	if err != nil {
-		fmt.Println("Error initializing logger")
+		fmt.Fprintln(os.Stderr, "error initializing logger:", err)
 		return nil, err
 	}
 
 	appConfig := config.GetConfig(logger)
 
-	db := database.GetConnection(logger, appConfig)
-	err = database.RunMigrations(logger, db.DB)
+	db, err := database.GetConnection(appConfig)
 	if err != nil {
+		return nil, err
+	}
+
+	if err = database.RunMigrations(logger, db.DB); err != nil {
 		return nil, err
 	}
 
@@ -43,13 +47,13 @@ func InitApp() (*App, error) {
 }
 
 func (app *App) Shutdown() error {
-	err := app.Logger.Sync()
-	if err != nil && !errors.Is(err, syscall.EINVAL) {
+	err := app.DB.Close()
+	if err != nil {
 		return err
 	}
 
-	err = app.DB.Close()
-	if err != nil {
+	err = app.Logger.Sync()
+	if err != nil && !errors.Is(err, syscall.EINVAL) {
 		return err
 	}
 

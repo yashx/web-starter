@@ -5,3 +5,8 @@ database:
   host: localhost
   port: 3306
   name: app
+  pool:
+    max-open: 25
+    max-idle: 10
+    lifetime-minutes: 5
+    idle-minutes: 2

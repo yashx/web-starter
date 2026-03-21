@@ -29,7 +29,7 @@ func (sR SubRouter) BuildHandler() (string, http.Handler) {
 func (sR SubRouter) getTaskHandlerFn(writer http.ResponseWriter, httpRequest *http.Request) {
 	var request *GetTaskRequest
 	if err := json.NewDecoder(httpRequest.Body).Decode(&request); err != nil {
-		httpHelper.JsonErrorResponse(sR.app, writer, httpRequest, appError.BadRequestErrorWithCause("Invalid Request", err))
+		httpHelper.JsonErrorResponse(sR.app, writer, httpRequest, appError.BadRequestError("Invalid Request", err))
 		return
 	}
 

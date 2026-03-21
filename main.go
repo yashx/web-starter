@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/signal"
 	"syscall"
 	"web-starter/foundation"
@@ -20,9 +21,15 @@ func main() {
 	app, err := foundation.InitApp()
 
 	if err != nil {
-		fmt.Println("error initialising app")
+		fmt.Fprintln(os.Stderr, "error initialising app:", err)
 		return
 	}
+
+	defer func() {
+		if r := recover(); r != nil {
+			app.Logger.Sugar().Errorw("application panicked", "panic", r)
+		}
+	}()
 
 	defer func(app *foundation.App) {
 		err := app.Shutdown()
@@ -30,12 +37,6 @@ func main() {
 			app.Logger.Warn("graceful shutdown failed", zap.Error(err))
 		}
 	}(app)
-
-	defer func() {
-		if r := recover(); r != nil {
-			app.Logger.Sugar().Errorw("application panicked", "panic", r)
-		}
-	}()
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()

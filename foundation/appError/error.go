@@ -1,7 +1,6 @@
 package appError
 
 import (
-	"fmt"
 	"net/http"
 
 	shakTypes "github.com/yashx/shak/types"
@@ -23,67 +22,59 @@ func (e *AppError) Unwrap() error {
 }
 
 const (
-	_InternalServerErrorCode = iota
-	_BadRequestErrorCode
-	_InvalidStateErrorCode
+	_internalServerErrorCode = "E000"
+	_badRequestErrorCode     = "E001"
+	_invalidStateErrorCode   = "E002"
 )
 
-func InternalServerError() *AppError {
-	return &AppError{
-		Code:       fmt.Sprintf("E%03d", _InternalServerErrorCode),
+func InternalServerError(cause ...error) *AppError {
+	e := &AppError{
+		Code:       _internalServerErrorCode,
 		Message:    "Internal server error",
 		HttpStatus: http.StatusInternalServerError,
 	}
-}
-
-func InternalServerErrorWithCause(cause error) *AppError {
-	return &AppError{
-		Code:       fmt.Sprintf("E%03d", _InternalServerErrorCode),
-		Message:    "Internal server error",
-		HttpStatus: http.StatusInternalServerError,
-		Cause:      cause,
+	if len(cause) > 0 {
+		e.Cause = cause[0]
 	}
+	return e
 }
 
-func BadRequestError(message string) *AppError {
-	return &AppError{
-		Code:       fmt.Sprintf("E%03d", _BadRequestErrorCode),
+func BadRequestError(message string, cause ...error) *AppError {
+	e := &AppError{
+		Code:       _badRequestErrorCode,
 		Message:    message,
 		HttpStatus: http.StatusBadRequest,
 	}
-}
-
-func BadRequestErrorWithCause(message string, cause error) *AppError {
-	return &AppError{
-		Code:       fmt.Sprintf("E%03d", _BadRequestErrorCode),
-		Message:    message,
-		HttpStatus: http.StatusBadRequest,
-		Cause:      cause,
+	if len(cause) > 0 {
+		e.Cause = cause[0]
 	}
+	return e
 }
 
 func BadRequestErrorFromValidationError(err *shakTypes.ValidationError) *AppError {
 	return &AppError{
-		Code:       fmt.Sprintf("E%03d", _BadRequestErrorCode),
+		Code:       _badRequestErrorCode,
 		Message:    err.Error(),
 		HttpStatus: http.StatusBadRequest,
 		Cause:      err,
 	}
 }
 
-func InvalidStateError(message string) *AppError {
-	return &AppError{
-		Code:       fmt.Sprintf("E%03d", _InvalidStateErrorCode),
+func InvalidStateError(message string, cause ...error) *AppError {
+	e := &AppError{
+		Code:       _invalidStateErrorCode,
 		Message:    message,
 		HttpStatus: http.StatusBadRequest,
 	}
+	if len(cause) > 0 {
+		e.Cause = cause[0]
+	}
+	return e
 }
 
-func InvalidStateErrorWithCause(message string, cause error) *AppError {
-	return &AppError{
-		Code:       fmt.Sprintf("E%03d", _InvalidStateErrorCode),
-		Message:    message,
-		HttpStatus: http.StatusBadRequest,
-		Cause:      cause,
+func IsInternalServerError(err *AppError) bool {
+	if err == nil {
+		return false
 	}
+	return err.Code == _internalServerErrorCode
 }

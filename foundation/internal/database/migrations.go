@@ -22,10 +22,7 @@ func RunMigrations(logger *zap.Logger, DB *sql.DB) error {
 		return err
 	}
 
-	if err := goose.Up(DB, "migrations"); err != nil {
-		logger.Panic("failed to run migrations", zap.Error(err))
-	}
-	return nil
+	return goose.Up(DB, "migrations")
 }
 
 type zapGooseLogger struct {
