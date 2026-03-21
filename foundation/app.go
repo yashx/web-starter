@@ -1,7 +1,9 @@
 package foundation
 
 import (
+	"errors"
 	"fmt"
+	"syscall"
 	"web-starter/foundation/internal/config"
 	"web-starter/foundation/internal/database"
 
@@ -42,7 +44,7 @@ func InitApp() (*App, error) {
 
 func (app *App) Shutdown() error {
 	err := app.Logger.Sync()
-	if err != nil {
+	if err != nil && !errors.Is(err, syscall.EINVAL) {
 		return err
 	}
 

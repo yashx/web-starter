@@ -8,7 +8,6 @@ run: build
 
 build:
     rm -rf bin/
-    go vet ./...
     go generate ./...
     go build -ldflags "-X main.Version={{version}} -X main.BuildTime={{build_time}}" -o bin/web-starter .
 

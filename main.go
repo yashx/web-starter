@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"os/signal"
+	"syscall"
 	"web-starter/foundation"
 	"web-starter/task"
 
@@ -34,13 +37,16 @@ func main() {
 		}
 	}()
 
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+
 	app.Logger.Info("starting application",
 		zap.String("version", Version),
 		zap.String("build_time", BuildTime),
 	)
 
-	err = app.StartHttpServer(task.NewSubRouter(app))
+	err = app.StartHttpServer(ctx, task.NewSubRouter(app))
 	if err != nil {
-		app.Logger.Panic("failed to start http server", zap.Error(err))
+		app.Logger.Error("http server stopped", zap.Error(err))
 	}
 }
