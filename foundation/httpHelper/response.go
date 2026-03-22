@@ -21,7 +21,7 @@ func JsonResponse(app *foundation.App, responseWriter http.ResponseWriter, httpR
 func JsonErrorResponse(app *foundation.App, responseWriter http.ResponseWriter, httpRequest *http.Request, err error) {
 	var aErr *appError.AppError
 	if !errors.As(err, &aErr) {
-		aErr = appError.InternalServerError(err)
+		aErr = appError.InternalServerErrorWithCause(err)
 	}
 	if appError.IsInternalServerError(aErr) {
 		app.Logger.Error("unexpected error", zap.Error(err))

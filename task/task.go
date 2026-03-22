@@ -37,7 +37,7 @@ func getTask(ctx context.Context, app *foundation.App, request *GetTaskRequest) 
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, appError.BadRequestError("task not found")
 		}
-		return nil, appError.InternalServerError(err)
+		return nil, appError.InternalServerErrorWithCause(err)
 	}
 	return &GetTaskResponse{
 		Task: t,

@@ -27,28 +27,38 @@ const (
 	_invalidStateErrorCode   = "E002"
 )
 
-func InternalServerError(cause ...error) *AppError {
-	e := &AppError{
+func InternalServerError() *AppError {
+	return &AppError{
 		Code:       _internalServerErrorCode,
 		Message:    "Internal server error",
 		HttpStatus: http.StatusInternalServerError,
 	}
-	if len(cause) > 0 {
-		e.Cause = cause[0]
-	}
-	return e
 }
 
-func BadRequestError(message string, cause ...error) *AppError {
-	e := &AppError{
+func InternalServerErrorWithCause(cause error) *AppError {
+	return &AppError{
+		Code:       _internalServerErrorCode,
+		Message:    "Internal server error",
+		HttpStatus: http.StatusInternalServerError,
+		Cause:      cause,
+	}
+}
+
+func BadRequestError(message string) *AppError {
+	return &AppError{
 		Code:       _badRequestErrorCode,
 		Message:    message,
 		HttpStatus: http.StatusBadRequest,
 	}
-	if len(cause) > 0 {
-		e.Cause = cause[0]
+}
+
+func BadRequestErrorWithCause(message string, cause error) *AppError {
+	return &AppError{
+		Code:       _badRequestErrorCode,
+		Message:    message,
+		HttpStatus: http.StatusBadRequest,
+		Cause:      cause,
 	}
-	return e
 }
 
 func BadRequestErrorFromValidationError(err *shakTypes.ValidationError) *AppError {
@@ -60,16 +70,21 @@ func BadRequestErrorFromValidationError(err *shakTypes.ValidationError) *AppErro
 	}
 }
 
-func InvalidStateError(message string, cause ...error) *AppError {
-	e := &AppError{
+func InvalidStateError(message string) *AppError {
+	return &AppError{
 		Code:       _invalidStateErrorCode,
 		Message:    message,
 		HttpStatus: http.StatusBadRequest,
 	}
-	if len(cause) > 0 {
-		e.Cause = cause[0]
+}
+
+func InvalidStateErrorWithCause(message string, cause error) *AppError {
+	return &AppError{
+		Code:       _invalidStateErrorCode,
+		Message:    message,
+		HttpStatus: http.StatusBadRequest,
+		Cause:      cause,
 	}
-	return e
 }
 
 func IsInternalServerError(err *AppError) bool {
