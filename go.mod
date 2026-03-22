@@ -3,6 +3,7 @@ module web-starter
 go 1.26.0
 
 require (
+	github.com/coder/websocket v1.8.14
 	github.com/go-chi/chi/v5 v5.2.5
 	github.com/go-chi/render v1.0.3
 	github.com/go-sql-driver/mysql v1.9.3

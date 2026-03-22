@@ -24,9 +24,9 @@ func JsonErrorResponse(app *foundation.App, responseWriter http.ResponseWriter, 
 		aErr = appError.InternalServerErrorWithCause(err)
 	}
 	if appError.IsInternalServerError(aErr) {
-		app.Logger.Error("unexpected error", zap.Error(err))
+		app.Logger.Error("unexpected error", zap.Error(err), zap.Any("cause", aErr.Cause))
 	} else {
-		app.Logger.Warn("sending error response", zap.Error(err))
+		app.Logger.Warn("sending error response", zap.Error(err), zap.Any("cause", aErr.Cause))
 	}
 	render.Status(httpRequest, aErr.HttpStatus)
 	render.JSON(responseWriter, httpRequest, aErr)

@@ -3,6 +3,7 @@ package foundation
 import (
 	"context"
 	"errors"
+	"net"
 	"net/http"
 	"time"
 
@@ -22,7 +23,13 @@ func (app *App) StartHttpServer(ctx context.Context, subRouters ...SubRouter) er
 	}
 
 	port := app.Config.MustString("http.port")
-	server := &http.Server{Addr: ":" + port, Handler: router}
+	server := &http.Server{
+		Addr:    ":" + port,
+		Handler: router,
+		BaseContext: func(_ net.Listener) context.Context {
+			return ctx
+		},
+	}
 
 	app.Logger.Info("starting server", zap.String("port", port))
 

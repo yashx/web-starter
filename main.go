@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"web-starter/foundation"
 	"web-starter/task"
+	"web-starter/ws"
 
 	"go.uber.org/zap"
 )
@@ -21,7 +22,7 @@ func main() {
 	app, err := foundation.InitApp()
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "error initialising app:", err)
+		_, _ = fmt.Fprintln(os.Stderr, "error initialising app:", err)
 		return
 	}
 
@@ -46,7 +47,7 @@ func main() {
 		zap.String("build_time", BuildTime),
 	)
 
-	err = app.StartHttpServer(ctx, task.NewSubRouter(app))
+	err = app.StartHttpServer(ctx, task.NewSubRouter(app), ws.NewSubRouter(app))
 	if err != nil {
 		app.Logger.Error("http server stopped", zap.Error(err))
 	}
